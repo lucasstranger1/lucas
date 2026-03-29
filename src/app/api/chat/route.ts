@@ -114,10 +114,9 @@ export async function POST(req: NextRequest) {
     caqSummary?: { fear: number; avoidance: number; attention: number };
   };
 
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = process.env.ANTHROPIC_API_KEY;
   const lastUserMessage = [...messages].reverse().find((m) => m.role === 'user')?.content ?? '';
 
-  // No API key — return smart fallback immediately
   if (!apiKey) {
     return NextResponse.json({ response: fallbackResponse(lastUserMessage, caqSummary) });
   }
@@ -125,32 +124,29 @@ export async function POST(req: NextRequest) {
   const systemPrompt = buildSystemPrompt(caqSummary);
 
   try {
-    const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
+    const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'claude-opus-4-6',
         max_tokens: 300,
-        temperature: 0.7,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          // send last 10 turns for session memory
-          ...messages.slice(-10),
-        ],
+        system: systemPrompt,
+        messages: messages.slice(-10),
       }),
     });
 
-    if (!openaiRes.ok) {
-      const err = await openaiRes.text();
-      console.error('OpenAI error:', err);
+    if (!anthropicRes.ok) {
+      const err = await anthropicRes.text();
+      console.error('Anthropic error:', err);
       return NextResponse.json({ response: fallbackResponse(lastUserMessage, caqSummary) });
     }
 
-    const data = await openaiRes.json();
-    const response = data.choices?.[0]?.message?.content?.trim() ?? fallbackResponse(lastUserMessage, caqSummary);
+    const data = await anthropicRes.json();
+    const response = data.content?.[0]?.text?.trim() ?? fallbackResponse(lastUserMessage, caqSummary);
     return NextResponse.json({ response });
   } catch (err) {
     console.error('Chat API error:', err);
