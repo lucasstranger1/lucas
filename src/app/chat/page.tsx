@@ -144,7 +144,6 @@ export default function ChatPage() {
             // All 6 questions answered — compute real subscale scores
             setCaqMode(false);
             setIsTyping(true);
-
             const caqSummary = {
                 fear: subscaleMean(newAnswers, 'fear'),
                 avoidance: subscaleMean(newAnswers, 'avoidance'),
@@ -159,12 +158,12 @@ export default function ChatPage() {
                 setMessages((prev) => [...prev, { role: 'assistant', content: summaryMsg }]);
             } catch {
                 // Compute a local summary if the API is unavailable
-                const baseline = { fear: 2.8, avoidance: 2.2, attention: 3.0 };
+                const baseline = { fear: 3.8, avoidance: 3.2, attention: 3.5 };
                 setMessages((prev) => [
                     ...prev,
                     {
                         role: 'assistant',
-                        content: `Thanks Maria. Your anxiety scores this week:\n\nFear: ${caqSummary.fear.toFixed(1)} (down from ${baseline.fear} in Week 1)\nAvoidance: ${caqSummary.avoidance.toFixed(1)} (down from ${baseline.avoidance})\nAttention: ${caqSummary.attention.toFixed(1)} (down from ${baseline.attention})\n\nThat's real progress. Your care team will see these scores right away. 💙`,
+                        content: `Thanks Maria. Your anxiety scores have changed significantly since Week 1:\n\nFear: ${caqSummary.fear.toFixed(1)} (down from ${baseline.fear})\nAvoidance: ${caqSummary.avoidance.toFixed(1)} (down from ${baseline.avoidance})\nAttention: ${caqSummary.attention.toFixed(1)} (down from ${baseline.attention})\n\nThat's real progress. Your care team will see these scores right away. 💙`,
                     },
                 ]);
             } finally {

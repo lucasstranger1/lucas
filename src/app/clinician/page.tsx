@@ -166,30 +166,60 @@ export default function ClinicianPage() {
                 </div>
             </div>
 
-            {/* Patient List */}
-            <div className="patient-list">
-                {clinicianPatients
-                    .sort((a, b) => {
-                        const order = { red: 0, yellow: 1, green: 2 };
-                        return order[a.status] - order[b.status];
-                    })
-                    .map((p) => (
-                        <div key={p.id} className="patient-row" onClick={() => setSelected(p)}>
-                            <span className={`status-dot ${p.status}`} />
-                            <span style={{ fontSize: '1.3rem' }}>{p.avatar}</span>
-                            <div className="patient-info">
-                                <div className="patient-name">{p.name}</div>
-                                <div className="patient-meta">
-                                    Age {p.age} · Week {p.week} · {p.sessionsCompleted}/{p.totalSessions} sessions
-                                </div>
-                                {p.lastAlert && (
-                                    <div style={{ fontSize: '0.72rem', color: p.status === 'red' ? 'var(--status-red)' : 'var(--status-yellow)', marginTop: 2 }}>
-                                        ⚠ {p.lastAlert}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    ))}
+            {/* Patient Table (Desktop Layout) */}
+            <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+                    <thead>
+                        <tr style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid var(--border-glass)' }}>
+                            <th style={{ padding: 'var(--space-md)', fontWeight: 600, color: 'var(--text-secondary)' }}>Patient</th>
+                            <th style={{ padding: 'var(--space-md)', fontWeight: 600, color: 'var(--text-secondary)' }}>Week</th>
+                            <th style={{ padding: 'var(--space-md)', fontWeight: 600, color: 'var(--text-secondary)' }}>Sessions</th>
+                            <th style={{ padding: 'var(--space-md)', fontWeight: 600, color: 'var(--text-secondary)' }}>Status</th>
+                            <th style={{ padding: 'var(--space-md)', fontWeight: 600, color: 'var(--text-secondary)' }}>CAQ Trend</th>
+                            <th style={{ padding: 'var(--space-md)', fontWeight: 600, color: 'var(--text-secondary)' }}>Last Active</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {clinicianPatients
+                            .sort((a, b) => {
+                                const order = { red: 0, yellow: 1, green: 2 };
+                                return order[a.status] - order[b.status];
+                            })
+                            .map((p) => (
+                                <tr
+                                    key={p.id}
+                                    onClick={() => setSelected(p)}
+                                    style={{
+                                        borderBottom: '1px solid var(--border-glass)',
+                                        cursor: 'pointer',
+                                        transition: 'background 0.2s',
+                                        background: p.status === 'red' ? 'rgba(239, 68, 68, 0.03)' : 'transparent',
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.background = p.status === 'red' ? 'rgba(239, 68, 68, 0.03)' : 'transparent'}
+                                >
+                                    <td style={{ padding: 'var(--space-md)', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
+                                        <span className={`status-dot ${p.status}`} />
+                                        <span style={{ fontSize: '1.2rem' }}>{p.avatar}</span>
+                                        <div style={{ fontWeight: 600 }}>{p.name}</div>
+                                    </td>
+                                    <td style={{ padding: 'var(--space-md)' }}>W{p.week}</td>
+                                    <td style={{ padding: 'var(--space-md)' }}>{p.sessionsCompleted}/{p.totalSessions}</td>
+                                    <td style={{ padding: 'var(--space-md)' }}>
+                                        <span className={`badge badge-${p.status}`}>{p.status.toUpperCase()}</span>
+                                    </td>
+                                    <td style={{ padding: 'var(--space-md)' }}>
+                                        <span style={{ color: p.caqAvoidance > 2.0 || p.caqFear > 2.5 ? 'var(--status-yellow)' : 'var(--text-muted)' }}>
+                                            {p.caqAvoidance > 2.0 || p.caqFear > 2.5 ? '↑ rising' : '↓ improv.'}
+                                        </span>
+                                    </td>
+                                    <td style={{ padding: 'var(--space-md)', color: 'var(--text-muted)' }}>
+                                        {p.status === 'red' ? '5 days ago' : p.status === 'yellow' ? '3 days ago' : 'today'}
+                                    </td>
+                                </tr>
+                            ))}
+                    </tbody>
+                </table>
             </div>
         </div>
     );

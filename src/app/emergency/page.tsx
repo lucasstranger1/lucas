@@ -99,10 +99,16 @@ export default function EmergencyPage() {
 
                 {/* Step 3: 911 (75s) */}
                 <div className={`emergency-step ${step >= 3 ? 'visible' : ''}`}>
-                    <div className="card" style={{ borderColor: 'var(--status-red)', borderWidth: 2, background: 'rgba(239, 68, 68, 0.05)' }}>
+                    <div className="card" style={{
+                        borderColor: 'transparent',
+                        background: step >= 3 ? '#DC2626' : 'rgba(239, 68, 68, 0.05)',
+                        color: step >= 3 ? '#FFFFFF' : 'inherit',
+                        boxShadow: step >= 3 ? '0 0 40px rgba(239, 68, 68, 0.5)' : 'none',
+                        transform: step >= 3 ? 'scale(1.02)' : 'none',
+                    }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-sm)' }}>
-                            <Hospital size={18} color="var(--status-red)" className="alert-pulse" />
-                            <span style={{ fontWeight: 700, color: 'var(--status-red)' }}>LEVEL 3 — 911 Auto-Dispatch ({ESCALATION.EMERGENCY_911}s)</span>
+                            <Hospital size={18} color={step >= 3 ? '#FFFFFF' : 'var(--status-red)'} className="alert-pulse" />
+                            <span style={{ fontWeight: 800, color: step >= 3 ? '#FFFFFF' : 'var(--status-red)', fontSize: '1.2rem' }}>🔴 EMERGENCY — GETTING HELP</span>
                         </div>
 
                         <div className="data-packet">
@@ -118,28 +124,39 @@ export default function EmergencyPage() {
                         </div>
 
                         <div style={{ marginTop: 'var(--space-md)', display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
-                            <div className="badge badge-red" style={{ alignSelf: 'flex-start' }}>
-                                🚑 EMS Dispatched
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 600 }}>
+                                ✓ 911 called — address & profile sent
                             </div>
-                            <div className="badge badge-yellow" style={{ alignSelf: 'flex-start' }}>
-                                📱 Daughter Sarah Garcia — auto-called
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 600 }}>
+                                ✓ Mount Sinai ER alerted
                             </div>
-                            <div className="badge badge-yellow" style={{ alignSelf: 'flex-start' }}>
-                                👨‍⚕️ Dr. Patel — notified
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 600 }}>
+                                ✓ Sarah (daughter) notified
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 600 }}>
+                                ✓ Dr. Patel&apos;s team notified
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Reset */}
-                <button className="btn btn-outline btn-full" onClick={resetDemo} style={{ marginTop: 'var(--space-lg)' }}>
-                    Reset Demo
-                </button>
+                {/* Reset or Cancel */}
+                {step >= 3 ? (
+                    <button className="btn btn-full" onClick={resetDemo} style={{ marginTop: 'var(--space-xl)', background: '#FFFFFF', color: '#DC2626', fontWeight: 800, fontSize: '1.2rem', padding: '20px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
+                        ✋ CANCEL — I&apos;M OKAY
+                    </button>
+                ) : (
+                    <button className="btn btn-outline btn-full" onClick={resetDemo} style={{ marginTop: 'var(--space-lg)' }}>
+                        Reset Demo
+                    </button>
+                )}
 
-                <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: 'var(--space-md)', lineHeight: 1.6 }}>
-                    Total time from collapse to 911: under 90 seconds.<br />
-                    Prompt → Nurse call → 911 with full medical profile.
-                </p>
+                {step < 3 && (
+                    <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: 'var(--space-md)', lineHeight: 1.6 }}>
+                        Total time from collapse to 911: under 90 seconds.<br />
+                        Prompt → Nurse call → 911 with full medical profile.
+                    </p>
+                )}
             </div>
         </div>
     );

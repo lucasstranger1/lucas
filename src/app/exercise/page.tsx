@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Shield } from 'lucide-react';
 import { todaySession, exerciseTutorials } from '@/lib/mockData';
 
 type SessionState = 'pre' | 'active' | 'complete';
@@ -104,8 +104,15 @@ export default function ExercisePage() {
                 </div>
 
                 <div className="card" style={{ marginTop: 'var(--space-md)' }}>
-                    <p style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: 'var(--space-sm)' }}>
-                        {todaySession.totalDuration}-minute {todaySession.type.toLowerCase()}
+                    <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: 'var(--space-md)', borderRadius: 'var(--radius-md)', marginBottom: 'var(--space-lg)', display: 'flex', gap: 'var(--space-sm)' }}>
+                        <Shield style={{ color: 'var(--status-green)', flexShrink: 0 }} size={20} />
+                        <p style={{ fontSize: '0.85rem', color: 'var(--text-primary)', lineHeight: 1.5 }}>
+                            <strong>Guardian will watch your heart rate during this session.</strong> If anything looks off, I'll tell you. If something serious happens, I'll get help immediately.
+                        </p>
+                    </div>
+
+                    <p style={{ fontWeight: 700, marginBottom: 'var(--space-md)', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.1em', color: 'var(--text-secondary)' }}>
+                        Today&apos;s Plan
                     </p>
                     <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: 'var(--space-md)' }}>
                         Choose a quick preview before you start. Demo mode uses guided placeholders only.
@@ -169,14 +176,14 @@ export default function ExercisePage() {
                         <div
                             ref={carouselRef}
                             style={{
-                            display: 'flex',
-                            gap: 'var(--space-sm)',
-                            overflowX: 'auto',
-                            paddingBottom: 'var(--space-xs)',
-                            scrollSnapType: 'x mandatory',
-                            scrollbarWidth: 'none',
-                            msOverflowStyle: 'none',
-                        }}>
+                                display: 'flex',
+                                gap: 'var(--space-sm)',
+                                overflowX: 'auto',
+                                paddingBottom: 'var(--space-xs)',
+                                scrollSnapType: 'x mandatory',
+                                scrollbarWidth: 'none',
+                                msOverflowStyle: 'none',
+                            }}>
                             {exerciseTutorials.map((tutorial) => (
                                 <button
                                     key={tutorial.id}
@@ -320,8 +327,9 @@ export default function ExercisePage() {
                 </div>
 
                 <button className="btn btn-primary btn-full" onClick={() => setState('active')}>
-                    I&apos;m ready — start ▶
+                    ▶ I&apos;m ready — start session
                 </button>
+
             </div>
         );
     }
@@ -367,6 +375,11 @@ export default function ExercisePage() {
     // Active session
     return (
         <div className="page" style={{ textAlign: 'center' }}>
+            {/* Guardian Status */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, color: 'var(--status-green)', marginBottom: 'var(--space-lg)' }}>
+                <Shield size={16} /> <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Guardian watching</span>
+            </div>
+
             {/* Phase indicator */}
             <div className="phase-indicator">
                 {todaySession.phases.map((_, i) => (
@@ -393,18 +406,26 @@ export default function ExercisePage() {
             </div>
 
             {/* Heart Rate */}
-            <div className="hr-display">
-                <div className="hr-value" style={{ color: zone.className.includes('danger') ? 'var(--status-red)' : 'var(--text-primary)' }}>
+            <div className="hr-display" style={{ marginTop: 'var(--space-xl)', marginBottom: 'var(--space-lg)' }}>
+                <div className="hr-value" style={{ fontSize: '4rem', color: zone.className.includes('danger') ? 'var(--status-red)' : 'var(--text-primary)' }}>
                     {heartRate}
                 </div>
                 <div className="hr-label">bpm</div>
-                <div className={`hr-zone ${zone.className}`}>{zone.label}</div>
+                <div className={`hr-zone ${zone.className}`} style={{ marginTop: 'var(--space-sm)' }}>{zone.label}</div>
             </div>
 
-            {/* Phase instruction */}
-            <div className="card" style={{ textAlign: 'left', marginTop: 'var(--space-lg)' }}>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', lineHeight: 1.7 }}>
-                    &ldquo;{phase.instruction}&rdquo;
+            {/* Live Chart Placeholder */}
+            <div style={{ height: 40, borderBottom: '1px solid var(--border-glass)', marginBottom: 'var(--space-lg)', position: 'relative', overflow: 'hidden' }}>
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 2, background: 'var(--border-glass)' }}></div>
+                <svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 100 40">
+                    <polyline points="0,30 20,25 40,35 60,20 80,15 100,28" fill="none" stroke="var(--accent-teal)" strokeWidth="2" strokeOpacity="0.5" />
+                </svg>
+            </div>
+
+            {/* Phase instruction / Companion Narration */}
+            <div className="card" style={{ textAlign: 'left', marginTop: 'var(--space-lg)', background: 'rgba(255,255,255,0.02)' }}>
+                <p style={{ color: 'var(--text-primary)', fontSize: '0.95rem', lineHeight: 1.6, fontStyle: 'italic' }}>
+                    &ldquo;Nice steady pace, Maria. Your heart is comfortable here.&rdquo;
                 </p>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: 'var(--space-sm)' }}>
                     {formatTime(phaseElapsed)} elapsed of {formatTime(phaseDuration)} in this phase
