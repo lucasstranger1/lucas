@@ -101,7 +101,6 @@ export default function CommunityPage() {
                         display: 'flex',
                         alignItems: 'center',
                         gap: 'var(--space-md)',
-                        padding: '10px 0',
                         borderBottom: i < 3 ? '1px solid rgba(255,255,255,0.05)' : 'none',
                         background: entry.you ? 'var(--accent-teal-dim)' : 'transparent',
                         margin: entry.you ? '0 -var(--space-lg)' : 0,
